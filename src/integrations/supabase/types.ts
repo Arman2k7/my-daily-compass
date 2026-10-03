@@ -14,7 +14,161 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      daily_logs: {
+        Row: {
+          attended: boolean
+          college_hours: number
+          created_at: string
+          gym_hours: number
+          id: string
+          log_date: string
+          study_hours: number
+          user_id: string
+          water_goal_ml: number
+          water_ml: number
+        }
+        Insert: {
+          attended?: boolean
+          college_hours?: number
+          created_at?: string
+          gym_hours?: number
+          id?: string
+          log_date: string
+          study_hours?: number
+          user_id?: string
+          water_goal_ml?: number
+          water_ml?: number
+        }
+        Update: {
+          attended?: boolean
+          college_hours?: number
+          created_at?: string
+          gym_hours?: number
+          id?: string
+          log_date?: string
+          study_hours?: number
+          user_id?: string
+          water_goal_ml?: number
+          water_ml?: number
+        }
+        Relationships: []
+      }
+      meals: {
+        Row: {
+          calories: number | null
+          created_at: string
+          description: string
+          id: string
+          log_date: string
+          meal_type: string
+          protein_g: number | null
+          user_id: string
+        }
+        Insert: {
+          calories?: number | null
+          created_at?: string
+          description: string
+          id?: string
+          log_date: string
+          meal_type: string
+          protein_g?: number | null
+          user_id?: string
+        }
+        Update: {
+          calories?: number | null
+          created_at?: string
+          description?: string
+          id?: string
+          log_date?: string
+          meal_type?: string
+          protein_g?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      routine_checks: {
+        Row: {
+          check_date: string
+          id: string
+          task_id: string
+          user_id: string
+        }
+        Insert: {
+          check_date: string
+          id?: string
+          task_id: string
+          user_id?: string
+        }
+        Update: {
+          check_date?: string
+          id?: string
+          task_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "routine_checks_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "routine_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      routine_tasks: {
+        Row: {
+          created_at: string
+          id: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          title: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      workout_sets: {
+        Row: {
+          created_at: string
+          exercise: string
+          id: string
+          log_date: string
+          reps: number
+          sets: number
+          user_id: string
+          weight_kg: number
+        }
+        Insert: {
+          created_at?: string
+          exercise: string
+          id?: string
+          log_date: string
+          reps?: number
+          sets?: number
+          user_id?: string
+          weight_kg?: number
+        }
+        Update: {
+          created_at?: string
+          exercise?: string
+          id?: string
+          log_date?: string
+          reps?: number
+          sets?: number
+          user_id?: string
+          weight_kg?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
