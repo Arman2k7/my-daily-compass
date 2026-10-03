@@ -41,5 +41,3 @@ export const EXERCISES: Exercise[] = [
 
 export const videoSearchUrl = (name: string) =>
   `https://www.youtube.com/results?search_query=${encodeURIComponent(name + " proper form tutorial")}`;
-export const videoEmbedUrl = (name: string) =>
-  `https://www.youtube.com/embed?listType=search&list=${encodeURIComponent(name + " proper form")}`;
