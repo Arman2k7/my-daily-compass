@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedLibraryRouteImport } from './routes/_authenticated/library'
 import { Route as AuthenticatedNutritionRouteImport } from './routes/_authenticated/nutrition'
+import { Route as AuthenticatedReportsRouteImport } from './routes/_authenticated/reports'
 import { Route as AuthenticatedTodayRouteImport } from './routes/_authenticated/today'
 import { Route as AuthenticatedWorkoutsRouteImport } from './routes/_authenticated/workouts'
 
@@ -41,6 +42,11 @@ const AuthenticatedNutritionRoute = AuthenticatedNutritionRouteImport.update({
   path: '/nutrition',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedReportsRoute = AuthenticatedReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedTodayRoute = AuthenticatedTodayRouteImport.update({
   id: '/today',
   path: '/today',
@@ -57,6 +63,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/library': typeof AuthenticatedLibraryRoute
   '/nutrition': typeof AuthenticatedNutritionRoute
+  '/reports': typeof AuthenticatedReportsRoute
   '/today': typeof AuthenticatedTodayRoute
   '/workouts': typeof AuthenticatedWorkoutsRoute
 }
@@ -65,6 +72,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/library': typeof AuthenticatedLibraryRoute
   '/nutrition': typeof AuthenticatedNutritionRoute
+  '/reports': typeof AuthenticatedReportsRoute
   '/today': typeof AuthenticatedTodayRoute
   '/workouts': typeof AuthenticatedWorkoutsRoute
 }
@@ -75,14 +83,29 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/_authenticated/library': typeof AuthenticatedLibraryRoute
   '/_authenticated/nutrition': typeof AuthenticatedNutritionRoute
+  '/_authenticated/reports': typeof AuthenticatedReportsRoute
   '/_authenticated/today': typeof AuthenticatedTodayRoute
   '/_authenticated/workouts': typeof AuthenticatedWorkoutsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/library' | '/nutrition' | '/today' | '/workouts'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/library'
+    | '/nutrition'
+    | '/reports'
+    | '/today'
+    | '/workouts'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/library' | '/nutrition' | '/today' | '/workouts'
+  to:
+    | '/'
+    | '/auth'
+    | '/library'
+    | '/nutrition'
+    | '/reports'
+    | '/today'
+    | '/workouts'
   id:
     | '__root__'
     | '/'
@@ -90,6 +113,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/_authenticated/library'
     | '/_authenticated/nutrition'
+    | '/_authenticated/reports'
     | '/_authenticated/today'
     | '/_authenticated/workouts'
   fileRoutesById: FileRoutesById
@@ -137,6 +161,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedNutritionRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/reports': {
+      id: '/_authenticated/reports'
+      path: '/reports'
+      fullPath: '/reports'
+      preLoaderRoute: typeof AuthenticatedReportsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/today': {
       id: '/_authenticated/today'
       path: '/today'
@@ -157,6 +188,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedLibraryRoute: typeof AuthenticatedLibraryRoute
   AuthenticatedNutritionRoute: typeof AuthenticatedNutritionRoute
+  AuthenticatedReportsRoute: typeof AuthenticatedReportsRoute
   AuthenticatedTodayRoute: typeof AuthenticatedTodayRoute
   AuthenticatedWorkoutsRoute: typeof AuthenticatedWorkoutsRoute
 }
@@ -164,6 +196,7 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedLibraryRoute: AuthenticatedLibraryRoute,
   AuthenticatedNutritionRoute: AuthenticatedNutritionRoute,
+  AuthenticatedReportsRoute: AuthenticatedReportsRoute,
   AuthenticatedTodayRoute: AuthenticatedTodayRoute,
   AuthenticatedWorkoutsRoute: AuthenticatedWorkoutsRoute,
 }

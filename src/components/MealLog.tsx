@@ -5,7 +5,7 @@ import { Panel, PanelHead, inputCls } from "./ui-kit";
 import { cn } from "@/lib/utils";
 
 const TYPES: MealType[] = ["breakfast", "lunch", "dinner", "snack"];
-const cap = (s: string) => s[0].toUpperCase() + s.slice(1);
+const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 export function MealLog({ date, compact = false }: { date: string; compact?: boolean }) {
   const { data: meals = [] } = useMeals(date);

@@ -39,7 +39,7 @@ export function analyzeMeal(m: MealLike): Flag[] {
     flags.push({
       level: "warn",
       issue: m.protein_g != null ? `Low protein (${m.protein_g}g, aim ${target}g+)` : "No clear protein source",
-      fix: PROTEIN_FIX[type] ?? PROTEIN_FIX.snack,
+      fix: PROTEIN_FIX[type] ?? PROTEIN_FIX["snack"] ?? "",
     });
   }
   if ((type === "lunch" || type === "dinner") && !has(t, VEG)) {

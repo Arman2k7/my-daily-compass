@@ -23,7 +23,7 @@ function Workouts() {
   const { data: sets = [] } = useWorkoutSets(date);
   const { add, remove } = useWorkoutActions();
   const upsertDaily = useUpsertDaily(date);
-  const [f, setF] = useState({ exercise: EXERCISES[0].name, sets: "3", reps: "8", weight: "" });
+  const [f, setF] = useState({ exercise: EXERCISES[0]?.name ?? "", sets: "3", reps: "8", weight: "" });
 
   const volume = sets.reduce((s, x) => s + x.sets * x.reps * Number(x.weight_kg), 0);
 
