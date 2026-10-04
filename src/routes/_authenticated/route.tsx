@@ -1,5 +1,6 @@
 import { createFileRoute, Link, Outlet, redirect, useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
+import { FloatingCoach } from "@/components/FloatingCoach";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
@@ -61,6 +62,7 @@ function AppShell() {
         </div>
       </header>
       <Outlet />
+      <FloatingCoach />
       <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-6 border-t border-line bg-ink/95 backdrop-blur-md md:hidden">
         {NAV.map((n) => (
           <Link
