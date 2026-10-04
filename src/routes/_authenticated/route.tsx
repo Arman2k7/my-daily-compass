@@ -17,6 +17,7 @@ const NAV = [
   { to: "/workouts", label: "Workouts" },
   { to: "/library", label: "Library" },
   { to: "/reports", label: "Reports" },
+  { to: "/coach", label: "Coach" },
 ] as const;
 
 function AppShell() {
@@ -60,7 +61,7 @@ function AppShell() {
         </div>
       </header>
       <Outlet />
-      <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-line bg-ink/95 backdrop-blur-md md:hidden">
+      <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-6 border-t border-line bg-ink/95 backdrop-blur-md md:hidden">
         {NAV.map((n) => (
           <Link
             key={n.to}
