@@ -17,6 +17,7 @@ const NAV = [
   { to: "/workouts", label: "Workouts" },
   { to: "/library", label: "Library" },
   { to: "/reports", label: "Reports" },
+  { to: "/coach", label: "Coach" },
 ] as const;
 
 function AppShell() {
