@@ -2,11 +2,27 @@ import { Link } from "@tanstack/react-router";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { Dumbbell, ExternalLink, Grip, X } from "lucide-react";
-import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type PointerEvent as ReactPointerEvent,
+} from "react";
 import { toast } from "sonner";
-import { Conversation, ConversationContent, ConversationEmptyState, ConversationScrollButton } from "@/components/ai-elements/conversation";
+import {
+  Conversation,
+  ConversationContent,
+  ConversationEmptyState,
+  ConversationScrollButton,
+} from "@/components/ai-elements/conversation";
 import { Message, MessageContent, MessageResponse } from "@/components/ai-elements/message";
-import { PromptInput, PromptInputFooter, PromptInputSubmit, PromptInputTextarea } from "@/components/ai-elements/prompt-input";
+import {
+  PromptInput,
+  PromptInputFooter,
+  PromptInputSubmit,
+  PromptInputTextarea,
+} from "@/components/ai-elements/prompt-input";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -50,7 +66,13 @@ function readPosition(): Position {
 export function FloatingCoach() {
   const [position, setPosition] = useState<Position | null>(null);
   const [open, setOpen] = useState(false);
-  const drag = useRef<{ pointerId: number; startX: number; startY: number; origin: Position; moved: boolean } | null>(null);
+  const drag = useRef<{
+    pointerId: number;
+    startX: number;
+    startY: number;
+    origin: Position;
+    moved: boolean;
+  } | null>(null);
   const transport = useMemo(
     () =>
       new DefaultChatTransport({
@@ -71,7 +93,8 @@ export function FloatingCoach() {
 
   useEffect(() => {
     setPosition(readPosition());
-    const handleResize = () => setPosition((current) => constrainPosition(current ?? getDefaultPosition()));
+    const handleResize = () =>
+      setPosition((current) => constrainPosition(current ?? getDefaultPosition()));
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
@@ -80,8 +103,16 @@ export function FloatingCoach() {
 
   const panelWidth = Math.min(380, window.innerWidth - 24);
   const panelHeight = Math.min(540, window.innerHeight - 112);
-  const panelLeft = clamp(position.x + BUTTON_SIZE - panelWidth, 12, window.innerWidth - panelWidth - 12);
-  const panelTop = clamp(position.y - panelHeight - 12, 68, window.innerHeight - panelHeight - (window.innerWidth < 768 ? 76 : 12));
+  const panelLeft = clamp(
+    position.x + BUTTON_SIZE - panelWidth,
+    12,
+    window.innerWidth - panelWidth - 12,
+  );
+  const panelTop = clamp(
+    position.y - panelHeight - 12,
+    68,
+    window.innerHeight - panelHeight - (window.innerWidth < 768 ? 76 : 12),
+  );
 
   const close = () => {
     stop();
@@ -134,33 +165,58 @@ export function FloatingCoach() {
         >
           <div className="flex min-w-0 flex-1 flex-col">
             <header className="flex h-14 shrink-0 items-center gap-3 border-b border-line px-4">
-              <span className="grid size-8 place-items-center rounded-md bg-brand text-ink"><Dumbbell className="size-4" /></span>
+              <span className="grid size-8 place-items-center rounded-md bg-brand text-ink">
+                <Dumbbell className="size-4" />
+              </span>
               <div className="min-w-0 flex-1">
                 <h2 className="font-display text-sm font-semibold text-strong">Cadence Coach</h2>
-                <p className="truncate text-[11px] text-muted-foreground">Personal advice from your recent logs</p>
+                <p className="truncate text-[11px] text-muted-foreground">
+                  Personal advice from your recent logs
+                </p>
               </div>
               <Button asChild variant="ghost" size="icon-sm" title="Open full Coach">
-                <Link to="/coach" onClick={close}><ExternalLink className="size-4" /><span className="sr-only">Open full Coach</span></Link>
+                <Link to="/coach" onClick={close}>
+                  <ExternalLink className="size-4" />
+                  <span className="sr-only">Open full Coach</span>
+                </Link>
               </Button>
               <Button variant="ghost" size="icon-sm" onClick={close} title="Close Coach">
-                <X className="size-4" /><span className="sr-only">Close Coach</span>
+                <X className="size-4" />
+                <span className="sr-only">Close Coach</span>
               </Button>
             </header>
 
             <Conversation className="min-h-0 flex-1 bg-ink/40">
               <ConversationContent className="gap-5 p-4">
                 {messages.length === 0 ? (
-                  <ConversationEmptyState className="min-h-64 p-5" title="What can I help with?" description="Ask about meals, training, study habits or books." icon={<Dumbbell className="size-7" />} />
+                  <ConversationEmptyState
+                    className="min-h-64 p-5"
+                    title="What can I help with?"
+                    description="Ask about meals, training, study habits or books."
+                    icon={<Dumbbell className="size-7" />}
+                  />
                 ) : (
                   messages.map((message) => (
                     <Message key={message.id} from={message.role}>
-                      <MessageContent className={message.role === "user" ? "bg-primary text-primary-foreground" : ""}>
-                        {message.parts.map((part, index) => part.type === "text" ? <MessageResponse key={index}>{part.text}</MessageResponse> : null)}
+                      <MessageContent
+                        className={
+                          message.role === "user" ? "bg-primary text-primary-foreground" : ""
+                        }
+                      >
+                        {message.parts.map((part, index) =>
+                          part.type === "text" ? (
+                            <MessageResponse key={index}>{part.text}</MessageResponse>
+                          ) : null,
+                        )}
                       </MessageContent>
                     </Message>
                   ))
                 )}
-                {status === "submitted" && <p className="text-[12px] text-muted-foreground animate-pulse">Coach is thinking…</p>}
+                {status === "submitted" && (
+                  <p className="text-[12px] text-muted-foreground animate-pulse">
+                    Coach is thinking…
+                  </p>
+                )}
               </ConversationContent>
               <ConversationScrollButton />
             </Conversation>
@@ -180,11 +236,15 @@ export function FloatingCoach() {
         title="Drag to move · tap to chat"
         className="fixed z-50 size-[52px] touch-none rounded-full bg-brand p-0 text-ink shadow-glow"
         style={{ left: position.x, top: position.y }}
-        onClick={(event) => { if (event.detail === 0) setOpen((value) => !value); }}
+        onClick={(event) => {
+          if (event.detail === 0) setOpen((value) => !value);
+        }}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
-        onPointerCancel={() => { drag.current = null; }}
+        onPointerCancel={() => {
+          drag.current = null;
+        }}
       >
         {open ? <X className="size-5" /> : <Dumbbell className="size-5" />}
         <Grip className="absolute -right-1 -top-1 size-4 rounded-full bg-panel p-0.5 text-muted-foreground" />
