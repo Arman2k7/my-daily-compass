@@ -1,5 +1,6 @@
 import { createFileRoute, Link, Outlet, redirect, useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
+import { FloatingCoach } from "@/components/FloatingCoach";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
@@ -30,7 +31,9 @@ function AppShell() {
       <header className="sticky top-0 z-30 flex items-center gap-6 border-b border-line/80 bg-ink/80 px-5 py-4 backdrop-blur-md md:px-8">
         <Link to="/today" className="flex items-center gap-2.5">
           <div className="size-7 rounded-lg bg-brand" />
-          <span className="font-display text-[15px] font-bold tracking-tight text-strong">Cadence</span>
+          <span className="font-display text-[15px] font-bold tracking-tight text-strong">
+            Cadence
+          </span>
         </Link>
         <nav className="ml-4 hidden items-center gap-1 text-[13px] md:flex">
           {NAV.map((n) => (
@@ -38,7 +41,9 @@ function AppShell() {
               key={n.to}
               to={n.to}
               className="rounded-md px-3 py-1.5 text-muted-foreground hover:text-strong"
-              activeProps={{ className: "rounded-md bg-strong/5 px-3 py-1.5 font-medium text-strong" }}
+              activeProps={{
+                className: "rounded-md bg-strong/5 px-3 py-1.5 font-medium text-strong",
+              }}
             >
               {n.label}
             </Link>
@@ -46,7 +51,8 @@ function AppShell() {
         </nav>
         <div className="ml-auto flex items-center gap-3">
           <div className="hidden items-center gap-2 rounded-full border border-line bg-panel px-3 py-1.5 text-[12px] text-muted-foreground sm:flex">
-            <span className="size-1.5 rounded-full bg-mint" />Synced · Cloud
+            <span className="size-1.5 rounded-full bg-mint" />
+            Synced · Cloud
           </div>
           <button
             title="Sign out"
@@ -61,6 +67,7 @@ function AppShell() {
         </div>
       </header>
       <Outlet />
+      <FloatingCoach />
       <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-6 border-t border-line bg-ink/95 backdrop-blur-md md:hidden">
         {NAV.map((n) => (
           <Link
