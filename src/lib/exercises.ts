@@ -16,7 +16,7 @@ export interface Exercise {
   cue: string;
   steps: string[];
   video?: string; // YouTube video id
-  image?: string;
+  image?: string | undefined;
 }
 
 const e = (slug: string, name: string, category: Category, muscle: string, cue: string, video: string, steps: string[], image?: string): Exercise =>
