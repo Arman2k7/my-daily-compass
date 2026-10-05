@@ -1,0 +1,1 @@
+ALTER TABLE public.daily_logs ADD COLUMN IF NOT EXISTS study_done boolean NOT NULL DEFAULT false, ADD COLUMN IF NOT EXISTS gym_done boolean NOT NULL DEFAULT false;
