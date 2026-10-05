@@ -19,9 +19,11 @@ export type Database = {
           attended: boolean
           college_hours: number
           created_at: string
+          gym_done: boolean
           gym_hours: number
           id: string
           log_date: string
+          study_done: boolean
           study_hours: number
           user_id: string
           water_goal_ml: number
@@ -31,9 +33,11 @@ export type Database = {
           attended?: boolean
           college_hours?: number
           created_at?: string
+          gym_done?: boolean
           gym_hours?: number
           id?: string
           log_date: string
+          study_done?: boolean
           study_hours?: number
           user_id?: string
           water_goal_ml?: number
@@ -43,9 +47,11 @@ export type Database = {
           attended?: boolean
           college_hours?: number
           created_at?: string
+          gym_done?: boolean
           gym_hours?: number
           id?: string
           log_date?: string
+          study_done?: boolean
           study_hours?: number
           user_id?: string
           water_goal_ml?: number
