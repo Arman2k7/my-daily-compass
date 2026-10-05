@@ -1,9 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { format, getISOWeek } from "date-fns";
 import { useDailyLog, useRoutine, useRoutineActions, useUpsertDaily } from "@/lib/data";
 import { todayKey } from "@/lib/dates";
-import { EXERCISES, videoSearchUrl } from "@/lib/exercises";
+import { EXERCISES, type Exercise } from "@/lib/exercises";
+import { VideoModal } from "@/components/VideoModal";
 import { WaterCard, useWater } from "@/components/WaterCard";
 import { MealLog } from "@/components/MealLog";
 import { PageHero, Panel, PanelHead, inputCls } from "@/components/ui-kit";
@@ -34,12 +35,13 @@ function Today() {
   const { ml, goal, add } = useWater(date);
   const left = routine.filter((r) => !r.done).length;
   const pct = Math.round((ml / goal) * 100);
+  const [video, setVideo] = useState<Exercise | null>(null);
 
   return (
     <main>
       <PageHero eyebrow={`${format(new Date(), "EEEE")} · Week ${getISOWeek(new Date())}`} title={<>{greeting()},<br />{name}.</>}>
         <p className="mx-auto mt-5 max-w-md text-[15px] leading-relaxed text-muted-foreground">
-          {routine.length ? `${left === 0 ? "Every habit done" : `${left} habit${left > 1 ? "s" : ""} left`} today. ` : ""}
+          {routine.length ? `${left === 0 ? "Every skill done" : `${left} skill${left > 1 ? "s" : ""} left`} today. ` : ""}
           Water is {pct}% in.
         </p>
         <button onClick={() => add(250)} className="mt-8 rounded-full bg-primary px-6 py-3 text-[14px] font-semibold text-primary-foreground shadow-glow">
@@ -59,66 +61,82 @@ function Today() {
       <section className="mx-auto mt-6 grid max-w-5xl grid-cols-1 gap-6 px-5 pb-20 md:grid-cols-2 md:px-8">
         <MealLog date={date} compact />
         <Panel>
-          <PanelHead title="Exercise library" sub="Form checks before you load the bar" right={<Link to="/library" className="text-[13px] text-cyan">All</Link>} />
+          <PanelHead title="Exercise library" sub="Form checks before you load the bar" right={<Link to="/workouts" className="text-[13px] text-cyan">All</Link>} />
           <div className="mt-4 grid gap-3">
             {EXERCISES.slice(0, 2).map((e) => (
-              <a key={e.slug} href={videoSearchUrl(e.name)} target="_blank" rel="noreferrer" className="flex items-center gap-4 rounded-xl border border-line bg-ink p-3 hover:border-iris/50">
+              <button key={e.slug} onClick={() => setVideo(e)} className="flex items-center gap-4 rounded-xl border border-line bg-ink p-3 text-left hover:border-iris/50">
                 <img src={e.image} alt={e.name} loading="lazy" width={96} height={64} className="h-16 w-24 shrink-0 rounded-lg object-cover" />
                 <div>
                   <p className="text-[14px] font-medium text-strong">{e.name}</p>
                   <p className="text-[12px] text-muted-foreground">{e.muscle} · {e.cue.toLowerCase()}</p>
                 </div>
-              </a>
+              </button>
             ))}
           </div>
         </Panel>
+        <VideoModal ex={video} onClose={() => setVideo(null)} />
       </section>
     </main>
   );
 }
 
+type BlockKey = "college_hours" | "study_hours" | "gym_hours";
+type DoneKey = "attended" | "study_done" | "gym_done";
+
 function TimeBlocks({ date }: { date: string }) {
   const { data } = useDailyLog(date);
   const upsert = useUpsertDaily(date);
-  const [v, setV] = useState({ college: "0", study: "0", gym: "0" });
-  useEffect(() => {
-    if (data) setV({ college: String(data.college_hours), study: String(data.study_hours), gym: String(data.gym_hours) });
-  }, [data]);
 
-  const rows = [
-    { key: "college" as const, label: "School / College", col: "college_hours", dot: "bg-cyan" },
-    { key: "study" as const, label: "Study / Reading", col: "study_hours", dot: "bg-iris" },
-    { key: "gym" as const, label: "Gym", col: "gym_hours", dot: "bg-mint" },
+  const rows: { label: string; col: BlockKey; done: DoneKey; dot: string; q: string }[] = [
+    { label: "School / College", col: "college_hours", done: "attended", dot: "bg-cyan", q: "Attended?" },
+    { label: "Study / Reading", col: "study_hours", done: "study_done", dot: "bg-iris", q: "Done?" },
+    { label: "Gym", col: "gym_hours", done: "gym_done", dot: "bg-mint", q: "Done?" },
   ];
-  const total = Number(v.college) + Number(v.study) + Number(v.gym);
+  const total = rows.reduce((s, r) => s + Number(data?.[r.col] ?? 0), 0);
+  const fmt = (h: number) => `${Math.floor(h)}h ${Math.round((h % 1) * 60)}m`;
 
   return (
     <Panel>
-      <PanelHead title="Time blocks" sub="Hours spent today" right={<span className="text-[13px] text-muted-foreground">{total.toFixed(1)}h</span>} />
+      <PanelHead title="Time blocks" sub="Time spent today" right={<span className="text-[13px] text-muted-foreground">{fmt(total)}</span>} />
       <div className="mt-4 space-y-3">
-        {rows.map((r) => (
-          <div key={r.key} className="flex items-center gap-3 rounded-xl border border-line bg-ink px-4 py-3">
-            <span className={cn("size-2 rounded-full", r.dot)} />
-            <span className="flex-1 text-[13px] text-strong">{r.label}</span>
-            <input
-              type="number" step="0.25" min={0} max={24}
-              value={v[r.key]}
-              onChange={(e) => setV({ ...v, [r.key]: e.target.value })}
-              onBlur={() => upsert.mutate({ [r.col]: Number(v[r.key]) || 0 })}
-              className={cn(inputCls, "w-20 text-right")}
-            />
-            <span className="text-[12px] text-muted-foreground">h</span>
-          </div>
-        ))}
-        <label className="flex items-center gap-3 px-1 pt-1 text-[13px] text-muted-foreground">
-          <input
-            type="checkbox"
-            checked={data?.attended ?? false}
-            onChange={(e) => upsert.mutate({ attended: e.target.checked })}
-            className="size-4 accent-[var(--cyan)]"
-          />
-          Attended classes today
-        </label>
+        {rows.map((r) => {
+          const val = Number(data?.[r.col] ?? 0);
+          const h = Math.floor(val);
+          const m = Math.round((val - h) * 60 / 5) * 5;
+          const set = (nh: number, nm: number) => upsert.mutate({ [r.col]: nh + nm / 60 });
+          const done = data?.[r.done] ?? false;
+          return (
+            <div key={r.col} className="rounded-xl border border-line bg-ink px-4 py-3">
+              <div className="flex items-center gap-3">
+                <span className={cn("size-2 rounded-full", r.dot)} />
+                <span className="flex-1 text-[13px] text-strong">{r.label}</span>
+                <select aria-label={`${r.label} hours`} value={h} onChange={(e) => set(Number(e.target.value), m)} className={inputCls}>
+                  {Array.from({ length: 17 }, (_, i) => <option key={i} value={i}>{i} h</option>)}
+                </select>
+                <select aria-label={`${r.label} minutes`} value={m % 60} onChange={(e) => set(h, Number(e.target.value))} className={inputCls}>
+                  {Array.from({ length: 12 }, (_, i) => i * 5).map((x) => <option key={x} value={x}>{x} m</option>)}
+                </select>
+              </div>
+              <div className="mt-2 flex items-center justify-end gap-2 text-[12px] text-muted-foreground">
+                {r.q}
+                {[true, false].map((yes) => (
+                  <button
+                    key={String(yes)}
+                    onClick={() => upsert.mutate({ [r.done]: yes })}
+                    className={cn(
+                      "rounded-md border px-3 py-1 font-medium",
+                      done === yes && data
+                        ? yes ? "border-transparent bg-mint text-ink" : "border-transparent bg-destructive text-strong"
+                        : "border-line text-muted-foreground",
+                    )}
+                  >
+                    {yes ? "Yes" : "No"}
+                  </button>
+                ))}
+              </div>
+            </div>
+          );
+        })}
       </div>
     </Panel>
   );
@@ -132,9 +150,9 @@ function Routine({ date }: { date: string }) {
 
   return (
     <Panel>
-      <PanelHead title="Routine" sub="Daily checklist" right={<span className="text-[13px] text-muted-foreground">{done} / {tasks.length}</span>} />
+      <PanelHead title="Skills" sub="Daily skill checklist" right={<span className="text-[13px] text-muted-foreground">{done} / {tasks.length}</span>} />
       <div className="mt-4 space-y-2">
-        {tasks.length === 0 && <p className="text-[13px] text-muted-foreground">Add habits like "Read 20 pages" or "Morning mobility".</p>}
+        {tasks.length === 0 && <p className="text-[13px] text-muted-foreground">Add skills like "Read 20 pages" or "Practice guitar".</p>}
         {tasks.map((t) => (
           <div key={t.id} className="group flex items-center gap-3 rounded-lg px-1 py-1.5">
             <button
@@ -155,7 +173,7 @@ function Routine({ date }: { date: string }) {
         }}
         className="mt-4 flex gap-2"
       >
-        <input className={cn(inputCls, "flex-1")} placeholder="New habit" value={title} onChange={(e) => setTitle(e.target.value)} />
+        <input className={cn(inputCls, "flex-1")} placeholder="New skill" value={title} onChange={(e) => setTitle(e.target.value)} />
         <button className="rounded-lg bg-primary px-4 text-[13px] font-semibold text-primary-foreground">Add</button>
       </form>
     </Panel>
