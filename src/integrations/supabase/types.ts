@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      body_metrics: {
+        Row: {
+          created_at: string
+          id: string
+          log_date: string
+          user_id: string
+          waist_cm: number | null
+          weight_kg: number | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          log_date: string
+          user_id?: string
+          waist_cm?: number | null
+          weight_kg?: number | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          log_date?: string
+          user_id?: string
+          waist_cm?: number | null
+          weight_kg?: number | null
+        }
+        Relationships: []
+      }
       daily_logs: {
         Row: {
           attended: boolean
@@ -56,6 +83,60 @@ export type Database = {
           user_id?: string
           water_goal_ml?: number
           water_ml?: number
+        }
+        Relationships: []
+      }
+      grocery_items: {
+        Row: {
+          category: string
+          created_at: string
+          done: boolean
+          id: string
+          name: string
+          user_id: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          done?: boolean
+          id?: string
+          name: string
+          user_id?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          done?: boolean
+          id?: string
+          name?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      meal_plans: {
+        Row: {
+          created_at: string
+          goals: Json
+          id: string
+          payload: Json
+          plan_date: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          goals?: Json
+          id?: string
+          payload: Json
+          plan_date: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          goals?: Json
+          id?: string
+          payload?: Json
+          plan_date?: string
+          user_id?: string
         }
         Relationships: []
       }
