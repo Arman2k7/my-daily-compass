@@ -133,7 +133,7 @@ function hashDate(dateKey: string): number {
 }
 
 function fixedItem(f: FixedItem): PlanItem {
-  return { name: f.name, qty: f.qty, protein: f.p, kcal: f.k, kind: f.qty.includes("piece") ? "carb" : "carb" };
+  return { name: f.name, qty: f.qty, protein: f.p, kcal: f.k, kind: "carb" };
 }
 
 function proteinItem(key: string, neededP: number, dateKey: string, seed: number, mealIndex: number): PlanItem {
@@ -146,13 +146,14 @@ function proteinItem(key: string, neededP: number, dateKey: string, seed: number
     const count = Math.min(2, Math.max(1, Math.ceil(neededP / 24)));
     return { name: "Whey protein shake", qty: `${count} scoop${count > 1 ? "s" : ""}`, protein: count * 24, kcal: count * 120, kind: "protein" };
   }
-  const src = PROTEIN_G[key];
+  const src: GSource = PROTEIN_G[key] ?? PROTEIN_G.dal!;
   const grams = Math.min(src.maxG, Math.max(src.minG, Math.round((neededP * 100) / src.p / 10) * 10));
   return { name: src.name, qty: `${grams} g`, protein: (grams * src.p) / 100, kcal: (grams * src.k) / 100, kind: "protein" };
 }
 
 function pick<T>(pool: T[], n: number): T {
-  return pool[n % pool.length];
+  const item = pool[n % pool.length];
+  return (item ?? pool[0]) as T;
 }
 
 export function buildDayPlan(goals: Goals, seed: number, dateKey: string): DayPlan {

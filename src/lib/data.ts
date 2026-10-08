@@ -1,7 +1,8 @@
 export const OWNER_ID = "ec33f8f8-83ab-4a2f-82c2-fcb479c8f9c5";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import type { Database } from "@/integrations/supabase/types";
+import type { Database, Json } from "@/integrations/supabase/types";
+
 
 export type DailyLog = Database["public"]["Tables"]["daily_logs"]["Row"];
 export type Meal = Database["public"]["Tables"]["meals"]["Row"];
@@ -195,7 +196,8 @@ export function useSaveMealPlan(date: string) {
         await supabase
           .from("meal_plans")
           .upsert(
-            { plan_date: date, user_id: OWNER_ID, goals, payload: payload as unknown as object },
+            { plan_date: date, user_id: OWNER_ID, goals, payload: payload as unknown as Json },
+
             { onConflict: "user_id,plan_date" },
           ),
       ),
