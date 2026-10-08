@@ -148,3 +148,119 @@ export function useRange(from: string, to: string) {
     },
   });
 }
+
+// ---------- meal plans ----------
+export interface PlanItem {
+  name: string;
+  qty: string;
+  protein: number;
+  kcal: number;
+  kind: "protein" | "carb" | "veg" | "fruit";
+}
+export interface PlannedMeal {
+  type: string;
+  items: PlanItem[];
+  protein: number;
+  kcal: number;
+}
+export interface DayPlan {
+  meals: PlannedMeal[];
+  protein: number;
+  kcal: number;
+  goals: { protein: number; kcal: number };
+  seed: number;
+}
+export interface SavedPlan {
+  id: string;
+  plan_date: string;
+  goals: { protein: number; kcal: number };
+  payload: DayPlan;
+}
+
+export function useMealPlan(date: string) {
+  return useQuery({
+    queryKey: ["plan", date],
+    queryFn: async () => {
+      const row = must(await supabase.from("meal_plans").select("*").eq("plan_date", date).maybeSingle());
+      return (row as unknown as SavedPlan) ?? null;
+    },
+  });
+}
+
+export function useSaveMealPlan(date: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ goals, payload }: { goals: { protein: number; kcal: number }; payload: DayPlan }) =>
+      must(
+        await supabase
+          .from("meal_plans")
+          .upsert(
+            { plan_date: date, user_id: OWNER_ID, goals, payload: payload as unknown as object },
+            { onConflict: "user_id,plan_date" },
+          ),
+      ),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["plan", date] }),
+  });
+}
+
+// ---------- grocery ----------
+export type GroceryItem = Database["public"]["Tables"]["grocery_items"]["Row"];
+
+export function useGroceryItems() {
+  return useQuery({
+    queryKey: ["grocery"],
+    queryFn: async () =>
+      must(
+        await supabase.from("grocery_items").select("*").order("done").order("created_at"),
+      ) as GroceryItem[],
+  });
+}
+
+export function useGroceryActions() {
+  const qc = useQueryClient();
+  const inv = () => qc.invalidateQueries({ queryKey: ["grocery"] });
+  return {
+    add: useMutation({
+      mutationFn: async (items: { name: string; category: string }[]) =>
+        must(await supabase.from("grocery_items").insert(items)),
+      onSuccess: inv,
+    }),
+    toggle: useMutation({
+      mutationFn: async ({ id, done }: { id: string; done: boolean }) =>
+        must(await supabase.from("grocery_items").update({ done }).eq("id", id)),
+      onSuccess: inv,
+    }),
+    remove: useMutation({
+      mutationFn: async (id: string) => must(await supabase.from("grocery_items").delete().eq("id", id)),
+      onSuccess: inv,
+    }),
+    clearDone: useMutation({
+      mutationFn: async () => must(await supabase.from("grocery_items").delete().eq("done", true)),
+      onSuccess: inv,
+    }),
+  };
+}
+
+// ---------- body metrics ----------
+export type BodyMetric = Database["public"]["Tables"]["body_metrics"]["Row"];
+
+export function useBodyMetrics() {
+  return useQuery({
+    queryKey: ["body"],
+    queryFn: async () =>
+      must(await supabase.from("body_metrics").select("*").order("log_date")) as BodyMetric[],
+  });
+}
+
+export function useBodyUpsert(date: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (patch: { weight_kg: number | null; waist_cm: number | null }) =>
+      must(
+        await supabase
+          .from("body_metrics")
+          .upsert({ ...patch, log_date: date, user_id: OWNER_ID }, { onConflict: "user_id,log_date" }),
+      ),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["body"] }),
+  });
+}
