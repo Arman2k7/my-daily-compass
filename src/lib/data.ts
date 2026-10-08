@@ -1,3 +1,4 @@
+export const OWNER_ID = "ec33f8f8-83ab-4a2f-82c2-fcb479c8f9c5";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
