@@ -25,11 +25,10 @@ export function useUpsertDaily(date: string) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (patch: Partial<DailyLog>) => {
-      const { data: u } = await supabase.auth.getUser();
       return must(
         await supabase
           .from("daily_logs")
-          .upsert({ ...patch, log_date: date, user_id: u.user!.id }, { onConflict: "user_id,log_date" })
+          .upsert({ ...patch, log_date: date, user_id: OWNER_ID }, { onConflict: "user_id,log_date" })
           .select()
           .single(),
       );
