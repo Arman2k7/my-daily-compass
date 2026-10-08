@@ -1,14 +1,8 @@
-import { createFileRoute, Link, Outlet, redirect, useNavigate } from "@tanstack/react-router";
-import { supabase } from "@/integrations/supabase/client";
+import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 import { FloatingCoach } from "@/components/FloatingCoach";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
-  beforeLoad: async () => {
-    const { data, error } = await supabase.auth.getUser();
-    if (error || !data.user) throw redirect({ to: "/auth" });
-    return { user: data.user };
-  },
   component: AppShell,
 });
 
@@ -21,9 +15,6 @@ const NAV = [
 ] as const;
 
 function AppShell() {
-  const { user } = Route.useRouteContext();
-  const navigate = useNavigate();
-  const initials = (user.email ?? "me").slice(0, 2).toUpperCase();
 
   return (
     <div className="min-h-screen pb-20 md:pb-0">
@@ -53,16 +44,6 @@ function AppShell() {
             <span className="size-1.5 rounded-full bg-mint" />
             Synced · Cloud
           </div>
-          <button
-            title="Sign out"
-            onClick={async () => {
-              await supabase.auth.signOut();
-              navigate({ to: "/auth" });
-            }}
-            className="grid size-8 place-items-center rounded-full bg-brand text-[12px] font-semibold text-ink"
-          >
-            {initials}
-          </button>
         </div>
       </header>
       <Outlet />

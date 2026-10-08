@@ -1,3 +1,4 @@
+export const OWNER_ID = "ec33f8f8-83ab-4a2f-82c2-fcb479c8f9c5";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
@@ -25,11 +26,10 @@ export function useUpsertDaily(date: string) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (patch: Partial<DailyLog>) => {
-      const { data: u } = await supabase.auth.getUser();
       return must(
         await supabase
           .from("daily_logs")
-          .upsert({ ...patch, log_date: date, user_id: u.user!.id }, { onConflict: "user_id,log_date" })
+          .upsert({ ...patch, log_date: date, user_id: OWNER_ID }, { onConflict: "user_id,log_date" })
           .select()
           .single(),
       );

@@ -29,8 +29,7 @@ function greeting() {
 
 function Today() {
   const date = todayKey();
-  const { user } = Route.useRouteContext();
-  const name = (user.user_metadata?.["full_name"] as string | undefined)?.split(" ")[0] ?? user.email?.split("@")[0] ?? "you";
+  const name = "Arman";
   const { data: routine = [] } = useRoutine(date);
   const { ml, goal, add } = useWater(date);
   const left = routine.filter((r) => !r.done).length;

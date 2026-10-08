@@ -10,13 +10,10 @@ import {
 
 const MODEL = "openai/gpt-6-astra";
 
-async function buildContext(token: string) {
+async function buildContext() {
   const sb = createClient<Database>(process.env["SUPABASE_URL"]!, process.env["SUPABASE_PUBLISHABLE_KEY"]!, {
-    global: { headers: { Authorization: `Bearer ${token}` } },
     auth: { persistSession: false, autoRefreshToken: false },
   });
-  const { data: u, error } = await sb.auth.getUser(token);
-  if (error || !u.user) return null;
   const from = new Date(Date.now() - 14 * 864e5).toISOString().slice(0, 10);
   const [logs, meals, sets, tasks] = await Promise.all([
     sb.from("daily_logs").select("log_date,college_hours,study_hours,gym_hours,attended,water_ml,water_goal_ml").gte("log_date", from).order("log_date"),
@@ -33,13 +30,10 @@ async function buildContext(token: string) {
 }
 
 export async function handleCoach(request: Request) {
-  const token = request.headers.get("authorization")?.replace(/^Bearer\s+/i, "");
-  if (!token) return new Response("Unauthorized", { status: 401 });
   const body = (await request.json().catch(() => null)) as { messages?: UIMessage[] } | null;
   if (!body?.messages?.length) return new Response("Bad request", { status: 400 });
 
-  const ctx = await buildContext(token);
-  if (ctx === null) return new Response("Unauthorized", { status: 401 });
+  const ctx = await buildContext();
 
   const apiKey = process.env["LOVABLE_API_KEY"];
   if (!apiKey) return new Response("AI is not configured", { status: 500 });
